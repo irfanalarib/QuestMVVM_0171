@@ -63,3 +63,10 @@ fun SiswaApp(
         }
     }
 }
+
+// Kembali ke Formulir, halaman Formulir tidak ikut dibuang
+private fun cancelAndBackToFormulir(
+    navController: NavHostController
+) {
+    navController.popBackStack(Navigasi.Formulir.name, inclusive = false)
+}
