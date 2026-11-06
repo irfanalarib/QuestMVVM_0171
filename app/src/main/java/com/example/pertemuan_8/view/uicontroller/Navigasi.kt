@@ -26,15 +26,15 @@ enum class Navigasi {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SiswaApp(
+    // Hanya tiga parameter, semuanya punya nilai bawaan kecuali modifier
     modifier: Modifier,
-    // ViewModel dibuat otomatis oleh viewModel()
     viewModel: SiswaViewModel = viewModel(),
-    navController: NavHostController = rememberNavController(),
-    cancelAndBackToFormulir: (NavHostController) -> Unit
+    navController: NavHostController = rememberNavController()
 ) {
     Scaffold { isiRuang ->
-        // Mengamati state ViewModel; berubah maka tampilan ikut berubah
+        // Mengamati state di ViewModel
         val uiState = viewModel.statusUI.collectAsState()
+
         NavHost(
             navController = navController,
             startDestination = Navigasi.Formulir.name,
@@ -47,24 +47,28 @@ fun SiswaApp(
                 FormSiswa(
                     pilihanJK = JenisK.map { id -> konteks.resources.getString(id) },
                     onSubmitButtonClicked = {
-                        // Simpan data ke ViewModel, lalu pindah halaman
+                        // Simpan data ke ViewModel, lalu pindah ke halaman Detail
                         viewModel.setSiswa(it)
                         navController.navigate(Navigasi.Detail.name)
                     }
                 )
             }
+
             // Halaman 2: Detail
             composable(route = Navigasi.Detail.name) {
                 TampilSiswa(
                     statusUiSiswa = uiState.value,
-                    onBackButtonClicked = { cancelAndBackToFormulir(navController) }
+                    onBackButtonClicked = {
+                        // Memanggil fungsi bantu di bawah
+                        cancelAndBackToFormulir(navController)
+                    }
                 )
             }
         }
     }
-}
+}   // <- penutup SiswaApp: fungsi bantu harus di luar sini
 
-// Kembali ke Formulir, halaman Formulir tidak ikut dibuang
+// Fungsi bantu terpisah (bukan parameter), kembali ke halaman Formulir
 private fun cancelAndBackToFormulir(
     navController: NavHostController
 ) {
